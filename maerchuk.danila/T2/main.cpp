@@ -1,38 +1,42 @@
-﻿#include "data_struct.hpp"
-#include <iostream>
+﻿#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <iterator>
 #include <limits>
+#include "data_struct.hpp"
 
 int main()
 {
   using nspace::DataStruct;
   std::vector< DataStruct > data;
 
+  // Чтение данных с использованием итераторов потока и алгоритма std::copy
   while (!std::cin.eof())
   {
-    DataStruct temp;
-    if (std::cin >> temp)
+    if (!std::cin)
     {
-      data.push_back(temp);
-    }
-    else
-    {
-      if (std::cin.eof()) break;
       std::cin.clear();
-      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      std::cin.ignore(std::numeric_limits< std::streamsize >::max(), '\n');
     }
+    std::copy(
+      std::istream_iterator< DataStruct >(std::cin),
+      std::istream_iterator< DataStruct >(),
+      std::back_inserter(data)
+    );
   }
 
   std::sort(data.begin(), data.end());
 
-  std::cout << "DataStruct:\n";
-  std::copy(
-    std::begin(data),
-    std::end(data),
-    std::ostream_iterator< DataStruct >(std::cout, "\n")
-  );
+  // Вывод результатов осуществляется только если вектор не пуст.
+  if (!data.empty())
+  {
+
+    std::copy(
+      std::begin(data),
+      std::end(data),
+      std::ostream_iterator< DataStruct >(std::cout, "\n")
+    );
+  }
 
   return 0;
 }
