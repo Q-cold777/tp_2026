@@ -82,16 +82,20 @@ bool doSegmentsIntersect(Point p1, Point q1, Point p2, Point q2) {
     return false;
 }
 
-// Проверка: находится ли точка внутри полигона (алгоритм луча)
 bool isPointInPolygon(Point pt, const Polygon& poly) {
     if (poly.points.size() < 3) return false;
     bool inside = false;
     size_t n = poly.points.size();
     for (size_t i = 0, j = n - 1; i < n; j = i++) {
-        if (((poly.points[i].y > pt.y) != (poly.points[j].y > pt.y)) &&
-            (pt.x < (poly.points[j].x - poly.points[i].x) * (pt.y - poly.points[i].y)
-            / (poly.points[j].y - poly.points[i].y) + poly.points[i].x)) {
-            inside = !inside;
+        bool cond1 = (poly.points[i].y > pt.y) != (poly.points[j].y > pt.y);
+        if (cond1) {
+            long long calc_x = (poly.points[j].x - poly.points[i].x);
+            calc_x = calc_x * (pt.y - poly.points[i].y);
+            calc_x = calc_x / (poly.points[j].y - poly.points[i].y);
+            calc_x = calc_x + poly.points[i].x;
+            if (pt.x < calc_x) {
+                inside = !inside;
+            }
         }
     }
     return inside;
@@ -99,20 +103,22 @@ bool isPointInPolygon(Point pt, const Polygon& poly) {
 
 bool doPolygonsIntersect(const Polygon& poly1, const Polygon& poly2)
 {
-    // 1. Проверяем пересечение границ
-    bool intersect = std::any_of(poly1.points.begin(), poly1.points.end(), [&](const Point& p1) {
-        size_t i = &p1 - &poly1.points[0];
-        Point q1 = poly1.points[(i + 1) % poly1.points.size()];
+    bool intersect = std::any_of(
+        poly1.points.begin(), poly1.points.end(), [&](const Point& p1) {
+            size_t i = &p1 - &poly1.points[0];
+            Point q1 = poly1.points[(i + 1) % poly1.points.size()];
 
-        return std::any_of(poly2.points.begin(), poly2.points.end(), [&](const Point& p2) {
-            size_t j = &p2 - &poly2.points[0];
-            Point q2 = poly2.points[(j + 1) % poly2.points.size()];
-            return doSegmentsIntersect(p1, q1, p2, q2);
-        });
-    });
+            return std::any_of(
+                poly2.points.begin(), poly2.points.end(), [&](const Point& p2) {
+                    size_t j = &p2 - &poly2.points[0];
+                    Point q2 = poly2.points[(j + 1) % poly2.points.size()];
+                    return doSegmentsIntersect(p1, q1, p2, q2);
+                }
+            );
+        }
+    );
     if (intersect) return true;
 
-    // 2. Проверяем полное поглощение (один внутри другого)
     if (isPointInPolygon(poly1.points[0], poly2)) return true;
     if (isPointInPolygon(poly2.points[0], poly1)) return true;
 
@@ -126,9 +132,11 @@ bool parsePoint(const std::string& s, Point& pt)
     if (s.size() < 5 || s.front() != '(' || s.back() != ')') return false;
     std::string inner = s.substr(1, s.size() - 2);
     size_t semi = inner.find(';');
-    if (semi == std::string::npos || semi == 0 || semi == inner.size() - 1) return false;
+    if (semi == std::string::npos || semi == 0 || semi == inner.size() - 1)
+    {
+        return false;
+    }
 
-    // Проверяем, что внутри только цифры и знаки минус
     auto check_digits = [](const std::string& str) {
         if (str.empty()) return false;
         size_t start = (str[0] == '-') ? 1 : 0;
@@ -156,7 +164,7 @@ bool parsePolygonLine(const std::string& line, Polygon& poly)
     std::stringstream ss(line);
     size_t num_vertices;
     if (!(ss >> num_vertices)) return false;
-    if (num_vertices < 3) return false; // Фигура не может быть < 3 вершин
+    if (num_vertices < 3) return false;
 
     std::vector<std::string> tokens;
     std::string token;
@@ -214,10 +222,11 @@ void handleArea(const std::vector<Polygon>& polygons, std::istream& is)
     } else {
         try {
             long long num = std::stoll(arg);
-            if (num < 3) { std::cout << "<INVALID COMMAND>\n"; return; } // Исправление тестов №5 и №15
+            if (num < 3) { std::cout << "<INVALID COMMAND>\n"; return; }
             total_area = std::accumulate(polygons.begin(), polygons.end(), 0.0,
                 [num](double sum, const Polygon& p) {
-                    return sum + (p.points.size() == static_cast<size_t>(num) ? getArea(p) : 0.0);
+                    bool match = p.points.size() == static_cast<size_t>(num);
+                    return sum + (match ? getArea(p) : 0.0);
                 });
         } catch (...) {
             std::cout << "<INVALID COMMAND>\n";
@@ -282,9 +291,11 @@ void handleCount(const std::vector<Polygon>& polygons, std::istream& is)
     } else {
         try {
             long long num = std::stoll(arg);
-            if (num < 3) { std::cout << "<INVALID COMMAND>\n"; return; } // Исправление тестов №5 и №15
+            if (num < 3) { std::cout << "<INVALID COMMAND>\n"; return; }
             count = std::count_if(polygons.begin(), polygons.end(),
-                [num](const Polygon& p) { return p.points.size() == static_cast<size_t>(num); });
+                [num](const Polygon& p) {
+                    return p.points.size() == static_cast<size_t>(num);
+                });
         } catch (...) {
             std::cout << "<INVALID COMMAND>\n";
             return;
@@ -306,7 +317,6 @@ void handleIntersections(const std::vector<Polygon>& polygons, std::istream& is)
     Polygon target;
     if (!parsePolygonFromStream(is, target)) {
         std::cout << "<INVALID COMMAND>\n";
-        // Важно: если парсинг аргументов стрима провалился, очищаем остаток строки ввода
         std::string dummy;
         std::getline(is, dummy);
         return;
