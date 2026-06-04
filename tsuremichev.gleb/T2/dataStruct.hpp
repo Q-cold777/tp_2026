@@ -13,13 +13,11 @@ struct DataStruct
   std::string key3;
 };
 
-// Вспомогательная структура для парсинга фиксированных символов (разделителей)
 struct DelimiterIO
 {
   char expected;
 };
 
-// Вспомогательная структура для парсинга меток (например, ":key1")
 struct LabelIO
 {
   std::string expected;
@@ -27,8 +25,6 @@ struct LabelIO
 
 std::istream &operator>>(std::istream &in, DelimiterIO &&dest);
 std::istream &operator>>(std::istream &in, LabelIO &&dest);
-// std::istream &operator>>(std::istream &in, DataStruct &dest);
-// std::ostream &operator<<(std::ostream &out, const DataStruct &src);
 std::istream &operator>>(std::istream &in, DataStruct &dest);
 std::ostream &operator<<(std::ostream &out, const DataStruct &src);
 

@@ -61,14 +61,12 @@ std::istream &operator>>(std::istream &in, DataStruct &dest)
   DataStruct input;
   bool has_k1 = false, has_k2 = false, has_k3 = false;
 
-  // Читаем ровно 3 поля в произвольном порядке
   for (int i = 0; i < 3; ++i)
   {
-    ss >> std::ws; // Пропускаем пробелы перед "key"
+    ss >> std::ws;
 
     std::string key_base;
     char ch;
-    // Считываем слово "key" посимвольно
     for (int j = 0; j < 3; ++j)
     {
       if (ss.get(ch))
@@ -83,13 +81,13 @@ std::istream &operator>>(std::istream &in, DataStruct &dest)
 
     char num;
     if (!(ss >> std::ws >> num))
-      return in; // Считываем номер ключа ('1', '2' или '3')
+      return in;
 
-    // В зависимости от считанной цифры парсим соответствующий тип данных
     if (num == '1')
     {
       double re, im;
-      if (ss >> std::ws >> LabelIO{"#c("} >> std::ws >> re >> std::ws >> im >> DelimiterIO{')'})
+      if (ss >> std::ws >> LabelIO{"#c("} >> std::ws >> re
+          >> std::ws >> im >> DelimiterIO{')'})
       {
         input.key1 = {re, im};
         has_k1 = true;
@@ -131,14 +129,11 @@ std::istream &operator>>(std::istream &in, DataStruct &dest)
       return in;
     }
 
-    // После каждого поля (включая последнее) обязательно должно идти двоеточие ':'
     ss >> std::noskipws >> DelimiterIO{':'};
   }
 
-  // В самом конце строки должна остаться только закрывающая скобка ')'
   ss >> DelimiterIO{')'};
 
-  // Проверяем, что поток не упал и ВСЕ ТРИ ключа были успешно инициализированы
   if (ss && has_k1 && has_k2 && has_k3)
   {
     dest = input;
