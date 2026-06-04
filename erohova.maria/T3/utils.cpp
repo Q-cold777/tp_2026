@@ -10,6 +10,7 @@ bool readPoint(std::istream& is, Point& pt) {
             return true;
         }
     }
+    is.clear();
     return false;
 }
 
@@ -18,22 +19,25 @@ bool parsePolygon(const std::string& line, Polygon& polygon) {
     size_t vertexesCount;
     if (!(ss >> vertexesCount)) return false;
 
-    polygon.points.clear();
-    bool success = true;
-    polygon.points.resize(vertexesCount);
+    if (vertexesCount < 3) return false;
 
-    std::generate_n(polygon.points.begin(), vertexesCount, [&]() {
+    std::vector<Point> tempPoints;
+    tempPoints.reserve(vertexesCount);
+
+    for (size_t i = 0; i < vertexesCount; ++i) {
         Point pt;
         if (!readPoint(ss, pt)) {
-            success = false;
+            return false;
         }
-        return pt;
-    });
+        tempPoints.push_back(pt);
+    }
 
     std::string trailing;
-    if (ss >> trailing || !success || polygon.points.size() != vertexesCount) {
+    if (ss >> trailing) {
         return false;
     }
+
+    polygon.points = std::move(tempPoints);
     return true;
 }
 
@@ -45,6 +49,7 @@ std::vector<Polygon> loadPolygonsFromFile(const std::string& filename) {
     std::string line;
     while (std::getline(file, line)) {
         if (line.empty()) continue;
+
         Polygon poly;
         if (parsePolygon(line, poly)) {
             polygons.push_back(poly);

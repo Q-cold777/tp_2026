@@ -17,6 +17,12 @@ void handleArea(const std::vector<Polygon>& dataset, std::istream& is) {
         return;
     }
 
+    std::string trailing;
+    if (is >> trailing) {
+        std::cout << "<INVALID COMMAND>\n";
+        return;
+    }
+
     iofmtguard guard(std::cout);
     std::cout << std::fixed << std::setprecision(1);
 
@@ -41,6 +47,10 @@ void handleArea(const std::vector<Polygon>& dataset, std::istream& is) {
     } else {
         try {
             size_t targetSize = std::stoull(arg);
+            if (targetSize < 3) {
+                std::cout << "<INVALID COMMAND>\n";
+                return;
+            }
             totalArea = std::accumulate(dataset.begin(), dataset.end(), 0.0, [=](double sum, const Polygon& p) {
                 return sum + (p.points.size() == targetSize ? getArea(p) : 0.0);
             });
@@ -55,6 +65,12 @@ void handleArea(const std::vector<Polygon>& dataset, std::istream& is) {
 void handleMax(const std::vector<Polygon>& dataset, std::istream& is) {
     std::string arg;
     if (!(is >> arg) || dataset.empty()) {
+        std::cout << "<INVALID COMMAND>\n";
+        return;
+    }
+
+    std::string trailing;
+    if (is >> trailing) {
         std::cout << "<INVALID COMMAND>\n";
         return;
     }
@@ -82,6 +98,12 @@ void handleMin(const std::vector<Polygon>& dataset, std::istream& is) {
         return;
     }
 
+    std::string trailing;
+    if (is >> trailing) {
+        std::cout << "<INVALID COMMAND>\n";
+        return;
+    }
+
     if (arg == "AREA") {
         auto it = std::min_element(dataset.begin(), dataset.end(), [](const Polygon& a, const Polygon& b) {
             return getArea(a) < getArea(b);
@@ -105,6 +127,12 @@ void handleCount(const std::vector<Polygon>& dataset, std::istream& is) {
         return;
     }
 
+    std::string trailing;
+    if (is >> trailing) {
+        std::cout << "<INVALID COMMAND>\n";
+        return;
+    }
+
     long long count = 0;
     if (arg == "EVEN") {
         count = std::count_if(dataset.begin(), dataset.end(), [](const Polygon& p) {
@@ -117,6 +145,10 @@ void handleCount(const std::vector<Polygon>& dataset, std::istream& is) {
     } else {
         try {
             size_t targetSize = std::stoull(arg);
+            if (targetSize < 3) {
+                std::cout << "<INVALID COMMAND>\n";
+                return;
+            }
             count = std::count_if(dataset.begin(), dataset.end(), [=](const Polygon& p) {
                 return p.points.size() == targetSize;
             });
@@ -138,6 +170,11 @@ void handlePerms(const std::vector<Polygon>& dataset, std::istream& is) {
         return;
     }
 
+    if (targetPoly.points.size() < 3) {
+        std::cout << "<INVALID COMMAND>\n";
+        return;
+    }
+
     long long count = std::count_if(dataset.begin(), dataset.end(), std::bind(isPermutation, std::placeholders::_1, targetPoly));
     std::cout << count << "\n";
 }
@@ -148,8 +185,8 @@ void handleRightShapes(const std::vector<Polygon>& dataset) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cerr << "Error: File argument missing.\n";
+    if (argc != 2) {
+        std::cerr << "Error: Invalid arguments.\n";
         return 1;
     }
 
