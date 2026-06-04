@@ -25,9 +25,9 @@ std::istream &operator>>(std::istream &in, DataStruct &dest)
     return in;
   }
 
-  size_t p1 = line.find(":key1");
-  size_t p2 = line.find(":key2");
-  size_t p3 = line.find(":key3");
+  std::size_t p1 = line.find(":key1");
+  std::size_t p2 = line.find(":key2");
+  std::size_t p3 = line.find(":key3");
 
   if (p1 == std::string::npos || p2 == std::string::npos || p3 == std::string::npos)
   {
@@ -37,13 +37,13 @@ std::istream &operator>>(std::istream &in, DataStruct &dest)
 
   DataStruct input;
 
-  size_t c_start = line.find("#c(", p1);
+  std::size_t c_start = line.find("#c(", p1);
   if (c_start == std::string::npos)
   {
     in.setstate(std::ios::failbit);
     return in;
   }
-  size_t c_end = line.find(')', c_start);
+  std::size_t c_end = line.find(')', c_start);
   if (c_end == std::string::npos)
   {
     in.setstate(std::ios::failbit);
@@ -62,7 +62,7 @@ std::istream &operator>>(std::istream &in, DataStruct &dest)
     return in;
   }
 
-  size_t col_after_k2 = line.find(':', p2 + 5);
+  std::size_t col_after_k2 = line.find(':', p2 + 5);
   if (col_after_k2 == std::string::npos)
   {
     in.setstate(std::ios::failbit);
@@ -88,13 +88,13 @@ std::istream &operator>>(std::istream &in, DataStruct &dest)
     return in;
   }
 
-  size_t q_start = line.find('"', p3);
+  std::size_t q_start = line.find('"', p3);
   if (q_start == std::string::npos)
   {
     in.setstate(std::ios::failbit);
     return in;
   }
-  size_t q_end = line.find('"', q_start + 1);
+  std::size_t q_end = line.find('"', q_start + 1);
   if (q_end == std::string::npos)
   {
     in.setstate(std::ios::failbit);
@@ -114,7 +114,7 @@ std::ostream &operator<<(std::ostream &out, const DataStruct &src)
 
   out << "(:key1 #c(" << std::fixed << std::setprecision(1) << src.key1.real()
       << " " << src.key1.imag() << ")"
-      << ":key2 " << std::scientific << std::setprecision(2) << src.key2
+      << ":key2 " << std::scientific << std::setprecision(1) << src.key2
       << ":key3 \"" << src.key3 << "\":)";
   return out;
 }
