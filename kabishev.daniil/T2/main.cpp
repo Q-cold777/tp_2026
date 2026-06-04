@@ -8,7 +8,7 @@
 
 int main()
 {
-    using nspace::DataStruct;
+    using kabishev::DataStruct;
 
     std::vector< DataStruct > data;
 

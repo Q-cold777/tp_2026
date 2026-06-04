@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <string>
 
-namespace nspace
+namespace kabishev
 {
   std::istream& operator>>(std::istream& in, DelimiterIO&& dest)
   {
