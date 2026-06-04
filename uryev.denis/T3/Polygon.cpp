@@ -28,14 +28,18 @@ std::istream& operator>>(std::istream& in, Polygon& dest) {
     return in;
   }
   
-  std::vector<Point> tempPoints(numPoints);
-  std::generate_n(tempPoints.begin(), numPoints, [&in]() {
+  std::vector<Point> tempPoints;
+  tempPoints.reserve(numPoints);
+  
+  for (size_t i = 0; i < numPoints; ++i) {
     Point p;
-    if (!(in >> p)) {
+    if (in >> p) {
+      tempPoints.push_back(p);
+    } else {
       in.setstate(std::ios::failbit);
+      return in;
     }
-    return p;
-  });
+  }
 
   if (in) {
     dest.points = std::move(tempPoints);

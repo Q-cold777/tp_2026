@@ -8,10 +8,13 @@
 #include <iomanip>
 #include <iterator>
 #include "Polygon.hpp"
-//комментарий
+
 void handleArea(const std::vector<Polygon>& polygons, std::istream& is) {
   std::string arg;
-  is >> arg;
+  if (!(is >> arg)) {
+    std::cout << "<INVALID COMMAND>\n";
+    return;
+  }
   double totalArea = 0.0;
   if (arg == "EVEN") {
     totalArea = std::accumulate(
@@ -61,7 +64,10 @@ void handleMax(const std::vector<Polygon>& polygons, std::istream& is) {
     return;
   }
   std::string arg;
-  is >> arg;
+  if (!(is >> arg)) {
+    std::cout << "<INVALID COMMAND>\n";
+    return;
+  }
   if (arg == "AREA") {
     auto it = std::max_element(
       polygons.begin(), polygons.end(),
@@ -87,7 +93,10 @@ void handleMin(const std::vector<Polygon>& polygons, std::istream& is) {
     return;
   }
   std::string arg;
-  is >> arg;
+  if (!(is >> arg)) {
+    std::cout << "<INVALID COMMAND>\n";
+    return;
+  }
   if (arg == "AREA") {
     auto it = std::min_element(
       polygons.begin(), polygons.end(),
@@ -109,7 +118,10 @@ void handleMin(const std::vector<Polygon>& polygons, std::istream& is) {
 
 void handleCount(const std::vector<Polygon>& polygons, std::istream& is) {
   std::string arg;
-  is >> arg;
+  if (!(is >> arg)) {
+    std::cout << "<INVALID COMMAND>\n";
+    return;
+  }
   long long count = 0;
   if (arg == "EVEN") {
     count = std::count_if(polygons.begin(), polygons.end(), [](const Polygon& p) {
@@ -189,24 +201,28 @@ int main(int argc, char* argv[]) {
     }
   }
   file.close();
-  std::string command;
-  while (std::cin >> command) {
+
+  // Построчное чтение команд из std::cin
+  while (std::getline(std::cin, line)) {
+    if (line.empty()) continue;
+    std::stringstream ss(line);
+    std::string command;
+    if (!(ss >> command)) continue;
+
     if (command == "AREA") {
-      handleArea(polygons, std::cin);
+      handleArea(polygons, ss);
     } else if (command == "MAX") {
-      handleMax(polygons, std::cin);
+      handleMax(polygons, ss);
     } else if (command == "MIN") {
-      handleMin(polygons, std::cin);
+      handleMin(polygons, ss);
     } else if (command == "COUNT") {
-      handleCount(polygons, std::cin);
+      handleCount(polygons, ss);
     } else if (command == "ECHO") {
-      handleEcho(polygons, std::cin);
+      handleEcho(polygons, ss);
     } else if (command == "INFRAME") {
-      handleInFrame(polygons, std::cin);
+      handleInFrame(polygons, ss);
     } else {
       std::cout << "<INVALID COMMAND>\n";
-      std::string dummy;
-      std::getline(std::cin, dummy);
     }
   }
   return 0;
