@@ -41,7 +41,7 @@ int KnapsackSolution::getTotalWeight() const
     return totalWeight_;
 }
 
-const Vector<size_t>& KnapsackSolution::getSelectedIndices() const
+const std::vector<size_t>& KnapsackSolution::getSelectedIndices() const
 {
     return selectedIndices_;
 }

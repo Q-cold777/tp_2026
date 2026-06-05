@@ -1,5 +1,5 @@
 #include "DPSolver.hpp"
-#include "../containers/Vector.hpp"
+#include <vector>
 #include <stdexcept>
 
 template<typename T>
@@ -10,7 +10,7 @@ T max(T a, T b)
 
 KnapsackSolution DPSolver::solve(const KnapsackInstance& instance)
 {
-    const Vector<Item>& items = instance.getItems();
+    const std::vector<Item>& items = instance.getItems();
     int n = instance.getItemCount();
     int capacity = instance.getCapacity();
 
@@ -19,7 +19,7 @@ KnapsackSolution DPSolver::solve(const KnapsackInstance& instance)
         return KnapsackSolution();
     }
 
-    Vector< Vector<int> > dpTable;
+    std::vector< std::vector<int> > dpTable;
     dpTable.resize(n + 1);
     for (int i = 0; i <= n; ++i)
     {

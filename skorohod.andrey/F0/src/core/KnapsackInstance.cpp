@@ -10,7 +10,7 @@ void KnapsackInstance::addItem(const Item& it)
     items_.push_back(it);
 }
 
-const Vector<Item>& KnapsackInstance::getItems() const
+const std::vector<Item>& KnapsackInstance::getItems() const
 {
     return items_;
 }

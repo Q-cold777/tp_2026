@@ -4,8 +4,8 @@
 
 void ConsolePrinter::printSolution(const KnapsackSolution& solution, const KnapsackInstance& instance)
 {
-    const Vector<size_t>& indices = solution.getSelectedIndices();
-    const Vector<Item>& items = instance.getItems();
+    const std::vector<size_t>& indices = solution.getSelectedIndices();
+    const std::vector<Item>& items = instance.getItems();
 
     std::cout << "Selected items:\n";
     if (indices.empty())

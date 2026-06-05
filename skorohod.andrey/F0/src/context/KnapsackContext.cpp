@@ -1,4 +1,5 @@
 #include "KnapsackContext.hpp"
+#include <stdexcept>
 
 KnapsackContext::KnapsackContext()
 {}

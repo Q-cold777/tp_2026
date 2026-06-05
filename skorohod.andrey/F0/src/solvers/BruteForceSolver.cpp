@@ -1,19 +1,19 @@
 #include "BruteForceSolver.hpp"
-#include "../containers/Vector.hpp"
+#include <vector>
 #include <stdexcept>
 
 KnapsackSolution BruteForceSolver::solve(const KnapsackInstance& instance)
 {
-    const Vector<Item>& items = instance.getItems();
+    const std::vector<Item>& items = instance.getItems();
     int n = instance.getItemCount();
     int capacity = instance.getCapacity();
 
     if (n == 0) return KnapsackSolution();
 
-    Vector<char> mask(n, 0);
+    std::vector<char> mask(n, 0);
 
     int bestValue = 0;
-    Vector<char> bestMask;
+    std::vector<char> bestMask;
 
     bool finished = false;
     while (!finished)

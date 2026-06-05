@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
         std::cerr << "Error reading file: " << e.what() << "\n";
         return 1;
     }
-    
+
     BruteForceSolver bruteSolver;
     DPSolver dpSolver;
     BacktrackingSolver backtrackSolver;

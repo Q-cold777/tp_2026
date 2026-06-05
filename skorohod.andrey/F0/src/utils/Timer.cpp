@@ -2,9 +2,9 @@
 #include <stdexcept>
 
 Timer::Timer():
-startTime(), 
-endTime(), 
-running(false), 
+startTime(),
+endTime(),
+running(false),
 accumulated(0.0)
 {}
 

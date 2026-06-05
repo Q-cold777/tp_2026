@@ -15,6 +15,7 @@ private:
         Item item;
         int originalIndex;
         bool operator>(const ItemData& other) const { return item.getDensity() > other.item.getDensity(); }
+        bool operator<(const ItemData& other) const { return item.getDensity() < other.item.getDensity(); }
     };
 };
 
@@ -29,6 +30,7 @@ private:
         Item item;
         int originalIndex;
         bool operator>(const ItemData& other) const { return item.getValue() > other.item.getValue(); }
+        bool operator<(const ItemData& other) const { return item.getValue() < other.item.getValue(); }
     };
 };
 
@@ -43,6 +45,7 @@ private:
         Item item;
         int originalIndex;
         bool operator>(const ItemData& other) const { return item.getWeight() < other.item.getWeight(); }
+        bool operator<(const ItemData& other) const { return item.getWeight() > other.item.getWeight(); }
     };
 };
 #endif

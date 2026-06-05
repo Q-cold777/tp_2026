@@ -1,15 +1,16 @@
 #include "GreedySolver.hpp"
-#include "../containers/Vector.hpp"
+#include <vector>
+#include <algorithm>
 
 KnapsackSolution GreedySolverDensity::solve(const KnapsackInstance& instance)
 {
-    const Vector<Item>& items = instance.getItems();
+    const std::vector<Item>& items = instance.getItems();
     int n = instance.getItemCount();
     int capacity = instance.getCapacity();
 
     if (n == 0 || capacity <= 0) return KnapsackSolution();
 
-    Vector<ItemData> temp;
+    std::vector<ItemData> temp;
     temp.reserve(n);
     for (int i = 0; i < n; ++i)
     {
@@ -18,8 +19,8 @@ KnapsackSolution GreedySolverDensity::solve(const KnapsackInstance& instance)
         gi.originalIndex = i;
         temp.push_back(gi);
     }
-    temp.bubbleSort();
-    temp.reverse();
+    std::sort(temp.begin(), temp.end());
+    std::reverse(temp.begin(), temp.end());
 
     KnapsackSolution solution;
     int remaining = capacity;
@@ -37,13 +38,13 @@ KnapsackSolution GreedySolverDensity::solve(const KnapsackInstance& instance)
 
 KnapsackSolution GreedySolverValue::solve(const KnapsackInstance& instance)
 {
-    const Vector<Item>& items = instance.getItems();
+    const std::vector<Item>& items = instance.getItems();
     int n = instance.getItemCount();
     int capacity = instance.getCapacity();
 
     if (n == 0 || capacity <= 0) return KnapsackSolution();
 
-    Vector<ItemData> temp;
+    std::vector<ItemData> temp;
     temp.reserve(n);
     for (int i = 0; i < n; ++i)
     {
@@ -52,8 +53,8 @@ KnapsackSolution GreedySolverValue::solve(const KnapsackInstance& instance)
         gi.originalIndex = i;
         temp.push_back(gi);
     }
-    temp.bubbleSort();
-    temp.reverse();
+    std::sort(temp.begin(), temp.end());
+    std::reverse(temp.begin(), temp.end());
 
     KnapsackSolution solution;
     int remaining = capacity;
@@ -71,13 +72,13 @@ KnapsackSolution GreedySolverValue::solve(const KnapsackInstance& instance)
 
 KnapsackSolution GreedySolverWeigth::solve(const KnapsackInstance& instance)
 {
-    const Vector<Item>& items = instance.getItems();
+    const std::vector<Item>& items = instance.getItems();
     int n = instance.getItemCount();
     int capacity = instance.getCapacity();
 
     if (n == 0 || capacity <= 0) return KnapsackSolution();
 
-    Vector<ItemData> temp;
+    std::vector<ItemData> temp;
     temp.reserve(n);
     for (int i = 0; i < n; ++i)
     {
@@ -86,8 +87,8 @@ KnapsackSolution GreedySolverWeigth::solve(const KnapsackInstance& instance)
         gi.originalIndex = i;
         temp.push_back(gi);
     }
-    temp.bubbleSort();
-    temp.reverse();
+    std::sort(temp.begin(), temp.end());
+    std::reverse(temp.begin(), temp.end());
 
     KnapsackSolution solution;
     int remaining = capacity;

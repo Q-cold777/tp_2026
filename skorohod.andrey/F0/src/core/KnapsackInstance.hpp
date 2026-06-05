@@ -2,19 +2,19 @@
 #define KNAPSACK_INSTANCE_HPP
 
 #include "Item.hpp"
-#include "../containers/Vector.hpp"
+#include <vector>
 
 class KnapsackInstance
 {
 public:
     KnapsackInstance(size_t cap = 0);
     void addItem(const Item&);
-    const Vector<Item>& getItems() const;
+    const std::vector<Item>& getItems() const;
     int getCapacity() const;
     size_t getItemCount() const;
 
 private:
-    Vector<Item> items_;
+    std::vector<Item> items_;
     int capacity_;
 };
 

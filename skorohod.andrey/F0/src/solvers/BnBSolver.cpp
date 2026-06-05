@@ -1,5 +1,6 @@
 #include "BnBSolver.hpp"
 #include <utility>
+#include <algorithm>
 
 double BnBSolver::computeBound(int level, int currentWeight, int currentValue) const
 {
@@ -22,7 +23,7 @@ double BnBSolver::computeBound(int level, int currentWeight, int currentValue) c
 
 KnapsackSolution BnBSolver::solve(const KnapsackInstance& instance)
 {
-    const Vector<Item>& origItems = instance.getItems();
+    const std::vector<Item>& origItems = instance.getItems();
     int n = origItems.size();
     capacity = instance.getCapacity();
 
@@ -37,13 +38,13 @@ KnapsackSolution BnBSolver::solve(const KnapsackInstance& instance)
         data.originalIndex = i;
         sortedItems.push_back(data);
     }
-    sortedItems.bubbleSort();
-    sortedItems.reverse();
+    std::sort(sortedItems.begin(), sortedItems.end());
+    std::reverse(sortedItems.begin(), sortedItems.end());
 
     bestValue = -1;
     bestTaken.clear();
 
-    PriorityQueue<Node> pq;
+    std::priority_queue<Node> pq;
     Node root;
     root.level = 0;
     root.weight = 0;

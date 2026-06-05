@@ -2,8 +2,8 @@
 #define BNB_SOLVER_HPP
 
 #include "Solver.hpp"
-#include "../containers/PriorityQueue.hpp"
-#include "../containers/Vector.hpp"
+#include <queue>
+#include <vector>
 
 class BnBSolver : public Solver
 {
@@ -26,16 +26,17 @@ private:
         int weight;
         int value;
         double bound;
-        Vector<int> taken;
+        std::vector<int> taken;
 
         bool operator>(const Node& other) const { return bound > other.bound; }
+        bool operator<(const Node& other) const { return bound < other.bound; }
         bool operator>=(const Node& other) const { return bound >= other.bound; }
     };
 
-    Vector<ItemData> sortedItems;
+    std::vector<ItemData> sortedItems;
     int capacity;
     int bestValue;
-    Vector<int> bestTaken;
+    std::vector<int> bestTaken;
 
     double computeBound(int level, int currentWeight, int currentValue) const;
 

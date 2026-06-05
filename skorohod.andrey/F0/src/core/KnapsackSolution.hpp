@@ -1,7 +1,7 @@
 #ifndef KNAPSACK_SOLUTION_HPP
 #define KNAPSACK_SOLUTION_HPP
 
-#include "../containers/Vector.hpp"
+#include <vector>
 
 class KnapsackSolution
 {
@@ -12,12 +12,12 @@ public:
     void addItem(size_t index, int weight, int value);
     int getTotalValue() const;
     int getTotalWeight() const;
-    const Vector<size_t>& getSelectedIndices() const;
+    const std::vector<size_t>& getSelectedIndices() const;
     void setTotalValue(int v);
     void setTotalWeight(int w);
 
 private:
-    Vector<size_t> selectedIndices_;
+    std::vector<size_t> selectedIndices_;
     int totalValue_;
     int totalWeight_;
 };
