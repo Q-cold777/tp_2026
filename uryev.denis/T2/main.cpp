@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <iterator>
-#include <limits> 
+#include <limits>
 
 int main() {
   std::vector<DataStruct> data;
@@ -24,8 +24,6 @@ int main() {
     if (a.key2 != b.key2) return a.key2 < b.key2;
     return a.key3.length() < b.key3.length();
     });
-
-  // 3. Вывод результатов
   std::copy(
     data.begin(),
     data.end(),
