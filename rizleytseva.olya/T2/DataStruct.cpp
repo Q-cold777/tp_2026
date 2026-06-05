@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cctype>
 
-//конструкторы
 DataStruct::DataStruct() : key1(0), key2('\0'), key3("") {}
 
 DataStruct::DataStruct(unsigned long long k1, char k2, const std::string& k3)
@@ -175,3 +174,4 @@ bool DataStructComparator::operator()(const DataStruct& lhs, const DataStruct& r
     }
     return lhs.key3.length() < rhs.key3.length();
 }
+
