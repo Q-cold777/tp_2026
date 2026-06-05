@@ -22,11 +22,8 @@ std::istream &operator>>(
     DataStruct &dest)
 {
   std::string line;
+  // Читаем всё содержимое потока (текущую строку)
   if (!std::getline(in, line))
-  {
-    return in;
-  }
-  if (line.empty())
   {
     return in;
   }
@@ -34,6 +31,12 @@ std::istream &operator>>(
   if (!line.empty() && line.back() == '\r')
   {
     line.pop_back();
+  }
+
+  if (line.empty())
+  {
+    in.setstate(std::ios::failbit);
+    return in;
   }
 
   bool missingBrackets = line.find('(') == std::string::npos || line.find(')') == std::string::npos;
@@ -56,6 +59,7 @@ std::istream &operator>>(
 
   DataStruct input;
 
+  // 1. Парсинг комплексного числа (key1)
   std::size_t c_start = line.find("#c(", p1);
   if (c_start == std::string::npos)
   {
@@ -83,6 +87,7 @@ std::istream &operator>>(
     return in;
   }
 
+  // 2. Парсинг вещественного числа (key2)
   std::size_t col_after_k2 = line.find(':', p2 + 5);
   if (col_after_k2 == std::string::npos)
   {
@@ -112,6 +117,7 @@ std::istream &operator>>(
     return in;
   }
 
+  // 3. Парсинг строки (key3)
   std::size_t q_start = line.find('"', p3);
   if (q_start == std::string::npos)
   {

@@ -4,6 +4,7 @@
 #include <iterator>
 #include <limits>
 #include <cmath>
+#include <sstream>
 #include "dataStruct.hpp"
 
 // Вспомогательная функция для сравнения структур (компаратор)
@@ -35,28 +36,32 @@ bool compareDataStruct(
 int main()
 {
   std::vector<DataStruct> data;
-  while (!std::cin.eof())
+  std::string line;
+
+  // Построчно читаем весь стандартный ввод
+  while (std::getline(std::cin, line))
   {
-    // Настраиваем итераторы для чтения из консоли (std::cin)
-    std::istream_iterator<DataStruct> input_begin(std::cin);
-    std::istream_iterator<DataStruct> input_end;
-
-    // Читаем данные до конца ввода
-    std::copy(
-        input_begin,
-        input_end,
-        std::back_inserter(data));
-
-    // Проверяем на критические ошибки парсинга
-    if (!std::cin.eof() && std::cin.fail())
+    if (line.empty())
     {
+      continue;
+    }
+
+    // Передаем строку в stringstream для безопасного парсинга
+    std::stringstream ss(line);
+    DataStruct temp;
+
+    if (ss >> temp)
+    {
+      data.push_back(temp);
+    }
+    else
+    {
+      // Если строка невалидна, просто игнорируем ее и идем дальше
       std::cin.clear();
-      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      ;
     }
   }
 
-  // Сортируем данные с использованием нашего компаратора
+  // Сортируем собранные валидные данные
   std::sort(
       data.begin(),
       data.end(),
