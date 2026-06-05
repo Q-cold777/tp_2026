@@ -8,13 +8,13 @@
 
 int main()
 {
-  std::vector<DataStruct> data;
+  std::vector<nspace::DataStruct> data;
 
   while (!std::cin.eof())
   {
     std::copy(
-        std::istream_iterator<DataStruct>(std::cin),
-        std::istream_iterator<DataStruct>(),
+        std::istream_iterator<nspace::DataStruct>(std::cin),
+        std::istream_iterator<nspace::DataStruct>(),
         std::back_inserter(data));
 
     if (std::cin.fail() && !std::cin.eof())
@@ -27,7 +27,7 @@ int main()
   std::sort(data.begin(), data.end());
 
   std::copy(data.begin(), data.end(),
-            std::ostream_iterator<DataStruct>(std::cout, "\n"));
+            std::ostream_iterator<nspace::DataStruct>(std::cout, "\n"));
 
   return 0;
 }

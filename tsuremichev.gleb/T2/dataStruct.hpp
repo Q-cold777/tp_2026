@@ -4,18 +4,51 @@
 #include <iostream>
 #include <string>
 #include <complex>
-#include "iotypes.hpp"
-#include "iofmtguard.hpp"
 
-struct DataStruct
+namespace nspace
 {
-  std::complex<double> key1{0.0, 0.0};
-  double key2 = 0.0;
-  std::string key3;
-};
+  struct DataStruct
+  {
+    std::complex<double> key1;
+    double key2;
+    std::string key3;
 
-std::istream &operator>>(std::istream &in, DataStruct &dest);
-std::ostream &operator<<(std::ostream &out, const DataStruct &src);
-bool operator<(const DataStruct &lhs, const DataStruct &rhs);
+    bool operator<(const DataStruct &other) const;
+  };
+
+  struct DelimetrIO
+  {
+    char exp;
+  };
+
+  struct DoubleSciIO
+  {
+    double &ref;
+  };
+
+  struct ComplexLspIO
+  {
+    std::complex<double> &ref;
+  };
+
+  struct StringIO
+  {
+    std::string &ref;
+  };
+
+  struct KeyIO
+  {
+    std::string &ref;
+  };
+
+  std::istream &operator>>(std::istream &in, DelimetrIO &&dest);
+  std::istream &operator>>(std::istream &in, ComplexLspIO &&dest);
+  std::istream &operator>>(std::istream &in, DoubleSciIO &&dest);
+  std::istream &operator>>(std::istream &in, StringIO &&dest);
+  std::istream &operator>>(std::istream &in, KeyIO &&dest);
+
+  std::istream &operator>>(std::istream &in, DataStruct &dest);
+  std::ostream &operator<<(std::ostream &out, const DataStruct &src);
+}
 
 #endif
