@@ -30,7 +30,7 @@ int main() {
 		std::cout << "getName():" << rect.getName() << "\n";
 	}
 
-
+	
 
 	std::cout << "\n\n========= SQUARE =========\n\n";
 	{
