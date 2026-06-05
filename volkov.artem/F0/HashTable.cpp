@@ -18,11 +18,11 @@ HashTable::~HashTable() {
 int HashTable::hashFunction(std::string word) const {
     unsigned int hash = 0;
 
-    for (int i = 0; i < (int) word.length(); i++) {
-        hash = (hash * 31 + (unsigned char) word[i]) % tableSize;
+    for (int i = 0; i < static_cast<int>(word.length()); i++) {
+        hash = (hash * 31 + static_cast<unsigned char>(word[i])) % tableSize;
     }
 
-    return (int) hash;
+    return static_cast<int>(hash);
 }
 
 bool HashTable::isCorrectWord(std::string word) const {
@@ -205,7 +205,7 @@ bool isWordSymbol(char symbol) {
 
 char toLowerSymbol(char symbol) {
     if (symbol >= 'A' && symbol <= 'Z') {
-        return (char) (symbol + ('a' - 'A'));
+        return static_cast<char>(symbol + ('a' - 'A'));
     }
 
     return symbol;
@@ -214,7 +214,7 @@ char toLowerSymbol(char symbol) {
 std::string prepareWord(std::string word) {
     std::string result = "";
 
-    for (int i = 0; i < (int) word.length(); i++) {
+    for (int i = 0; i < static_cast<int>(word.length()); i++) {
         if (isWordSymbol(word[i])) {
             result = result + toLowerSymbol(word[i]);
         }
@@ -226,7 +226,7 @@ std::string prepareWord(std::string word) {
 void addTextToTable(std::string text, HashTable &table) {
     std::string word = "";
 
-    for (int i = 0; i < (int) text.length(); i++) {
+    for (int i = 0; i < static_cast<int>(text.length()); i++) {
         if (isWordSymbol(text[i])) {
             word = word + toLowerSymbol(text[i]);
         } else {
