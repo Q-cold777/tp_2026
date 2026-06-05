@@ -158,7 +158,7 @@ void cmdArea(const std::vector<Polygon>& data, std::istream& is, std::ostream& o
         setupIomanip(os);
         std::size_t area = areaNum(data, num);
         if (area == 0) os << "<INVALID COMMAND>\n";
-        os << area << '\n';
+        else os << area << '\n';
     } else {
         os << "<INVALID COMMAND>\n";
     }
@@ -216,7 +216,7 @@ void cmdCount(const std::vector<Polygon>& data, std::istream& is, std::ostream& 
         std::size_t num = std::stoul(param);
         std::size_t count = countNum(data, num);
         if (count == 0) os << "<INVALID COMMAND>\n";
-        os << count << '\n';
+        else os << count << '\n';
     } else {
         os << "<INVALID COMMAND>\n";
     }
@@ -248,7 +248,8 @@ void cmdEcho(std::vector<Polygon>& data, std::istream& is, std::ostream& os)
         });
     std::size_t added = newData.size() - data.size();
     data = std::move(newData);
-    os << added << '\n';
+    if (added == 0) os << "<INVALID COMMAND>\n";
+    else os << added << '\n';
 }
 
 void cmdRightshapes(const std::vector<Polygon>& data, std::istream& is, std::ostream& os)
