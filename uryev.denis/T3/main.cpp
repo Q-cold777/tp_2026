@@ -9,7 +9,6 @@
 #include <iterator>
 #include "Polygon.hpp"
 
-// Реализация AREA разновидностей
 void handleArea(const std::vector<Polygon> &polygons, std::istream &is)
 {
   std::string arg;
