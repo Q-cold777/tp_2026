@@ -78,6 +78,12 @@ bool parsePolygon(const std::string& line, Polygon& out) {
     }
 
     int n = std::stoi(match[1].str());
+
+    // Фигура должна иметь минимум 3 вершины
+    if (n < 3) {
+        return false;
+    }
+
     std::string coords = match[2].str();
 
     auto points_begin = std::sregex_iterator(
@@ -160,8 +166,9 @@ void processCommand(
                 std::cout << sum << "\n";
             }
             else if (arg1 == "MEAN") {
+                // Если фигур нет — невалидная команда
                 if (polygons.empty()) {
-                    std::cout << 0.0 << "\n";
+                    valid = false;
                 } else {
                     auto sumArea = [](double acc, const Polygon& p) {
                         return acc + p.area;
@@ -176,16 +183,21 @@ void processCommand(
             else {
                 try {
                     int num = std::stoi(arg1);
-                    auto matchCount = [num](double acc, const Polygon& p) {
+                    // Количество вершин должно быть >= 3
+                    if (num < 3) {
+                        valid = false;
+                    } else {
                         size_t sz = static_cast<size_t>(num);
-                        return acc + (p.points.size() == sz ?
-                                      p.area : 0.0);
-                    };
-                    double sum = std::accumulate(
-                        polygons.begin(), polygons.end(),
-                        0.0, matchCount
-                    );
-                    std::cout << sum << "\n";
+                        auto matchCount = [sz](double acc, const Polygon& p) {
+                            return acc + (p.points.size() == sz ?
+                                          p.area : 0.0);
+                        };
+                        double sum = std::accumulate(
+                            polygons.begin(), polygons.end(),
+                            0.0, matchCount
+                        );
+                        std::cout << sum << "\n";
+                    }
                 } catch (...) {
                     valid = false;
                 }
@@ -196,11 +208,11 @@ void processCommand(
     }
     else if (cmd == "MAX") {
         if (ss >> arg1) {
+            // Если фигур нет — невалидная команда
             if (polygons.empty()) {
-                std::cout << (arg1 == "AREA" ? 0.0 : 0) << "\n";
-                return;
+                valid = false;
             }
-            if (arg1 == "AREA") {
+            else if (arg1 == "AREA") {
                 auto cmpArea = [](const Polygon& a, const Polygon& b) {
                     return a.area < b.area;
                 };
@@ -227,11 +239,11 @@ void processCommand(
     }
     else if (cmd == "MIN") {
         if (ss >> arg1) {
+            // Если фигур нет — невалидная команда
             if (polygons.empty()) {
-                std::cout << (arg1 == "AREA" ? 0.0 : 0) << "\n";
-                return;
+                valid = false;
             }
-            if (arg1 == "AREA") {
+            else if (arg1 == "AREA") {
                 auto cmpArea = [](const Polygon& a, const Polygon& b) {
                     return a.area < b.area;
                 };
@@ -279,14 +291,19 @@ void processCommand(
             else {
                 try {
                     int num = std::stoi(arg1);
-                    auto matchCount = [num](const Polygon& p) {
+                    // Количество вершин должно быть >= 3
+                    if (num < 3) {
+                        valid = false;
+                    } else {
                         size_t sz = static_cast<size_t>(num);
-                        return p.points.size() == sz;
-                    };
-                    int count = std::count_if(
-                        polygons.begin(), polygons.end(), matchCount
-                    );
-                    std::cout << count << "\n";
+                        auto matchCount = [sz](const Polygon& p) {
+                            return p.points.size() == sz;
+                        };
+                        int count = std::count_if(
+                            polygons.begin(), polygons.end(), matchCount
+                        );
+                        std::cout << count << "\n";
+                    }
                 } catch (...) {
                     valid = false;
                 }
