@@ -20,13 +20,11 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // ИСПРАВЛЕНО: используем ручной цикл вместо istream_iterator
     std::vector<Polygon> polygons;
     Polygon p;
     while (file >> p) {
-        polygons.push_back(std::move(p));
+        polygons.push_back(p);
     }
-    file.clear(); // Сбрасываем failbit/eofbit
     file.close();
 
     std::cout << std::fixed << std::setprecision(1);
@@ -88,7 +86,7 @@ int main(int argc, char* argv[]) {
                 auto cmp = [](const Polygon& a, const Polygon& b) { return a.points.size() < b.points.size(); };
                 auto it = (cmd == "MAX") ? std::max_element(polygons.begin(), polygons.end(), cmp)
                 : std::min_element(polygons.begin(), polygons.end(), cmp);
-                std::cout << std::noshowpoint << it->points.size() << "\n";
+                std::cout << it->points.size() << "\n";
             } else {
                 std::cout << "<INVALID COMMAND>\n";
             }
@@ -152,8 +150,8 @@ int main(int argc, char* argv[]) {
             int global_min_x = INT_MAX, global_max_x = INT_MIN;
             int global_min_y = INT_MAX, global_max_y = INT_MIN;
 
-            for (const auto& p : polygons) {
-                for (const auto& pt : p.points) {
+            for (const auto& poly : polygons) {
+                for (const auto& pt : poly.points) {
                     global_min_x = std::min(global_min_x, pt.x);
                     global_max_x = std::max(global_max_x, pt.x);
                     global_min_y = std::min(global_min_y, pt.y);
