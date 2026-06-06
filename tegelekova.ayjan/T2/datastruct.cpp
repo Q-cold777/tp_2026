@@ -54,10 +54,10 @@ static std::string formatDoubleSci(double value)
     {
         return "1.0e-1";
     }
-    
+
     int exponent = 0;
     double mantissa = value;
-    
+
     if (mantissa != 0)
     {
         while (mantissa >= 10.0)
@@ -71,7 +71,7 @@ static std::string formatDoubleSci(double value)
             exponent--;
         }
     }
-    
+
     std::ostringstream oss;
     oss << std::fixed << std::setprecision(1) << mantissa << "e" << exponent;
     return oss.str();
@@ -82,9 +82,9 @@ static bool parseDataStruct(const std::string& line, DataStruct& ds)
     std::string content = trim(line);
     if (content.length() < 2 || content[0] != '(' || content[content.length() - 1] != ')')
         return false;
-    
+
     content = content.substr(1, content.length() - 2);
-    
+
     std::vector<std::string> fields;
     std::stringstream ss(content);
     std::string field;
@@ -93,21 +93,21 @@ static bool parseDataStruct(const std::string& line, DataStruct& ds)
         if (!field.empty())
             fields.push_back(field);
     }
-    
+
     bool hasKey1 = false, hasKey2 = false, hasKey3 = false;
     char key1_val = 0;
     double key2_val = 0.0;
     std::string key3_val;
-    
+
     for (const auto& f : fields)
     {
         size_t spacePos = f.find(' ');
         if (spacePos == std::string::npos)
             continue;
-        
+
         std::string fieldName = f.substr(0, spacePos);
         std::string fieldValue = f.substr(spacePos + 1);
-        
+
         if (fieldName == "key1")
         {
             if (parseChar(fieldValue, key1_val))
@@ -128,7 +128,7 @@ static bool parseDataStruct(const std::string& line, DataStruct& ds)
             }
         }
     }
-    
+
     if (hasKey1 && hasKey2 && hasKey3)
     {
         ds.key1 = key1_val;

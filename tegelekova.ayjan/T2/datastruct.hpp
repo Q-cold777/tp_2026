@@ -11,7 +11,7 @@ namespace tchervinsky
         char key1;
         double key2;
         std::string key3;
-        
+
         bool operator<(const DataStruct& other) const;
     };
 
