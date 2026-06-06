@@ -4,7 +4,8 @@
 #include <algorithm>
 #include <iterator>
 
-int main() {
+int main()
+{
     std::vector<DataStruct> dataVector;
 
     std::copy(
@@ -23,4 +24,3 @@ int main() {
 
     return 0;
 }
- 

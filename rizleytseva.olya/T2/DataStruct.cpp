@@ -3,9 +3,8 @@
 #include <limits>
 #include <iomanip>
 
-// вспомогательные операторы ввода
+// ============ ВСПОМОГАТЕЛЬНЫЕ ОПЕРАТОРЫ ВВОДА ============
 
-// Читает ровно один символ-разделитель (пропускает пробелы через sentry/>>)
 std::istream& operator>>(std::istream& in, DelimiterIO&& dest)
 {
   std::istream::sentry sentry(in);
@@ -22,8 +21,6 @@ std::istream& operator>>(std::istream& in, DelimiterIO&& dest)
   return in;
 }
 
-// Читает беззнаковое целое в hex-формате: 0xFF, 0xABC, 0X1a
-// std::hex вместе с >> сам распознаёт префикс 0x/0X
 std::istream& operator>>(std::istream& in, UllHexIO&& dest)
 {
   std::istream::sentry sentry(in);
@@ -35,7 +32,6 @@ std::istream& operator>>(std::istream& in, UllHexIO&& dest)
   return in;
 }
 
-// Читает символьный литерал вида 'A'
 std::istream& operator>>(std::istream& in, CharLitIO&& dest)
 {
   std::istream::sentry sentry(in);
@@ -43,14 +39,12 @@ std::istream& operator>>(std::istream& in, CharLitIO&& dest)
   {
     return in;
   }
-  // Открывающая кавычка, один символ (get не пропускает пробелы), закрывающая кавычка
   in >> DelimiterIO{ '\'' };
   in.get(dest.ref);
   in >> DelimiterIO{ '\'' };
   return in;
 }
 
-// Читает строку в двойных кавычках: "Hello world"
 std::istream& operator>>(std::istream& in, StringIO&& dest)
 {
   std::istream::sentry sentry(in);
@@ -61,7 +55,6 @@ std::istream& operator>>(std::istream& in, StringIO&& dest)
   return std::getline(in >> DelimiterIO{ '"' }, dest.ref, '"');
 }
 
-// Читает ключевое слово без кавычек и проверяет совпадение с ожидаемым
 std::istream& operator>>(std::istream& in, LabelIO&& dest)
 {
   std::istream::sentry sentry(in);
@@ -77,14 +70,10 @@ std::istream& operator>>(std::istream& in, LabelIO&& dest)
   return in;
 }
 
-// оператор ввода для дата структ
-// Формат: (:key1 0xFF:key2 'A':key3 "Hello":)
-// поля могут идти в любом порядке
-//Собирает всё вместе: читает строку, парсит поля, заполняет структуру
-// плохие строки пропускаются — цикл продолжается до следующей валидной записи.
+// ============ ОПЕРАТОР ВВОДА ДЛЯ DataStruct ============
+
 std::istream& operator>>(std::istream& in, DataStruct& dest)
 {
-  // Пробуем читать строки пока не найдём валидную запись или не кончится поток
   while (in.good())
   {
     std::istream::sentry sentry(in);
@@ -97,8 +86,6 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
     bool hasKey1 = false;
     bool hasKey2 = false;
     bool hasKey3 = false;
-
-    // Сохраняем позицию: если разбор не удастся — пропускаем до конца строки
     std::streampos lineStart = in.tellg();
 
     {
@@ -157,24 +144,20 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
 
     if (in && hasKey1 && hasKey2 && hasKey3)
     {
-      // Запись успешно прочитана
       dest = std::move(input);
       return in;
     }
 
-    // Запись невалидна — очищаем failbit и пропускаем остаток строки
     in.clear();
     in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
   }
 
-  // Поток исчерпан — выставляем failbit, чтобы istream_iterator остановился
   in.setstate(std::ios::failbit);
   return in;
 }
 
-// оператор вывода
-// Формат вывода совпадает с форматом ввода: (:key1 0xFF:key2 'A':key3 "Hello":)
-// iofmtguard восстанавливает флаги форматирования потока после вывода
+// ============ ОПЕРАТОР ВЫВОДА ДЛЯ DataStruct ============
+
 std::ostream& operator<<(std::ostream& out, const DataStruct& src)
 {
   std::ostream::sentry sentry(out);
@@ -190,7 +173,8 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& src)
   return out;
 }
 
-// оператор сравнения
+// ============ ОПЕРАТОР СРАВНЕНИЯ ============
+
 bool DataStruct::operator<(const DataStruct& other) const
 {
   if (key1 != other.key1)
@@ -204,9 +188,11 @@ bool DataStruct::operator<(const DataStruct& other) const
   return key3.size() < other.key3.size();
 }
 
-// компаратор
-bool DataStructComparator::operator()(const DataStruct& lhs,
-                                      const DataStruct& rhs) const
+// ============ КОМПАРАТОР ============
+
+bool DataStructComparator::operator()(
+    const DataStruct& lhs,
+    const DataStruct& rhs) const
 {
   return lhs < rhs;
 }

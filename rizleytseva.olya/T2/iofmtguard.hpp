@@ -3,7 +3,8 @@
 
 #include <ios>
 
-// Scope guard: сохраняет флаги форматирования потока и восстанавливает их в деструкторе
+// Scope guard: сохраняет флаги форматирования потока
+// и восстанавливает их в деструкторе
 class iofmtguard
 {
 public:
@@ -17,4 +18,4 @@ private:
   std::basic_ios< char >::fmtflags fmt_;
 };
 
-#endif // IOFMTGUARD_HPP
+#endif
