@@ -8,7 +8,7 @@ double getArea(const Polygon& p) {
 	if (p.points.size() < 3) return 0.0;
 	double area = std::inner_product(
 		p.points.begin(), p.points.end() - 1,
-		p.points.begin() + 1,
+        p.points.begin() + 1,
 		0.0,
 		std::plus<double>(),
 		[](const Point& a, const Point& b) {
