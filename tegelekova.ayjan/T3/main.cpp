@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <set>
 
 int main(int argc, char* argv[])
 {
@@ -31,9 +32,27 @@ int main(int argc, char* argv[])
         std::istringstream iss(line);
         tchervinsky::Polygon p;
 
-        if (iss >> p)
-            polygons.push_back(p);
+        if (!(iss >> p)) continue;
 
+        // Must have at least 3 vertices
+        if (p.points.size() < 3) continue;
+
+        // No duplicate points
+        std::set<tchervinsky::Point> uniq(p.points.begin(), p.points.end());
+        if (uniq.size() != p.points.size()) continue;
+
+        // No trailing garbage on the line
+        std::string rest;
+        std::getline(iss, rest);
+        bool hasGarbage = false;
+        for (char c : rest)
+            if (c != ' ' && c != '\t' && c != '\r' && c != '\n')
+            {
+                hasGarbage = true; break;
+            }
+        if (hasGarbage) continue;
+
+        polygons.push_back(p);
     }
 
     while (std::getline(std::cin, line))
@@ -44,3 +63,4 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+

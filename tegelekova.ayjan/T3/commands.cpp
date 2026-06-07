@@ -156,7 +156,7 @@ namespace tchervinsky
             if (!(iss >> target)) { std::cout << "<INVALID COMMAND>" << std::endl; return; }
             if (target.points.size() < 3) { std::cout << "<INVALID COMMAND>" << std::endl; return; }
 
-            // проверка на дубликаты
+            // проверка на дубликаты точек
             {
                 std::set<Point> uniq(target.points.begin(), target.points.end());
                 if (uniq.size() != target.points.size())
@@ -184,6 +184,13 @@ namespace tchervinsky
                     i++;
                 }
             }
+
+            // Если фигура не найдена в коллекции — добавляем её (новая фигура)
+            if (added == 0)
+            {
+                polygons.push_back(target);
+            }
+
             std::cout << added << std::endl;
         }
         else if (cmd == "INFRAME")
