@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <set>
 
 namespace tchervinsky
 {
@@ -208,18 +209,14 @@ namespace tchervinsky
                 return;
             }
 
-            if (hasDuplicatePoints(target))
+            // Проверка на дубликаты точек
             {
-                std::cout << "<INVALID COMMAND>" << std::endl;
-                return;
-            }
-
-            std::string rest;
-            std::getline(iss, rest);
-            if (!rest.empty() && rest.find_first_not_of(" \t\n\r") != std::string::npos)
-            {
-                std::cout << "<INVALID COMMAND>" << std::endl;
-                return;
+                std::set<Point> uniquePoints(target.points.begin(), target.points.end());
+                if (uniquePoints.size() != target.points.size())
+                {
+                    std::cout << "<INVALID COMMAND>" << std::endl;
+                    return;
+                }
             }
 
             size_t addedCount = 0;
@@ -233,6 +230,7 @@ namespace tchervinsky
                 }
             }
             std::cout << addedCount << std::endl;
+            }
         }
         else if (cmd == "INFRAME")
         {
