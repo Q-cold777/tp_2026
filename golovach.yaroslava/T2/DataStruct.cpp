@@ -38,11 +38,15 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
         if (!in) return in;
 
         std::string key_name = "";
-        char peek_c = in.peek();
-        while (peek_c != ' ' && peek_c != ':' && in >> peek_c)
+        char ch = 0;
+        while (in >> ch && ch != ' ' && ch != ':')
         {
-            key_name += peek_c;
-            peek_c = in.peek();
+            key_name += ch;
+        }
+
+        if (ch == ':')
+        {
+            in.putback(ch);
         }
 
         if (key_name == "key1")
