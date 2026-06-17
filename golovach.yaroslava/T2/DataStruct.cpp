@@ -34,44 +34,23 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
 
     for (size_t i = 0; i < 3; ++i)
     {
-        char next_char = 0;
-        in >> next_char;
-        if (next_char != ':')
-        {
-            in.setstate(std::ios_base::failbit);
-            return in;
-        }
+        in >> DelimiterChar{':'};
+        if (!in) return in;
 
         std::string key_name = "";
-        while (in >> next_char && next_char != ' ' && next_char != ':')
+        char peek_c = in.peek();
+        while (peek_c != ' ' && peek_c != ':' && in >> peek_c)
         {
-            key_name += next_char;
-        }
-
-        if (next_char == ':')
-        {
-            in.putback(next_char);
+            key_name += peek_c;
+            peek_c = in.peek();
         }
 
         if (key_name == "key1")
         {
             if (has_key1) { in.setstate(std::ios_base::failbit); return in; }
-
             double val = 0.0;
             if (in >> val)
             {
-                char suffix = 0;
-                if (in >> suffix)
-                {
-                    if (suffix != 'd' && suffix != 'D')
-                    {
-                        in.putback(suffix);
-                    }
-                }
-                else
-                {
-                    in.clear();
-                }
                 temp.key1 = val;
                 has_key1 = true;
             }
@@ -79,7 +58,6 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
         else if (key_name == "key2")
         {
             if (has_key2) { in.setstate(std::ios_base::failbit); return in; }
-
             char c = 0;
             in >> DelimiterChar{'\''} >> c >> DelimiterChar{'\''};
             if (in)
@@ -91,16 +69,7 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
         else if (key_name == "key3")
         {
             if (has_key3) { in.setstate(std::ios_base::failbit); return in; }
-
-            while (in >> next_char && next_char != '"')
-            {
-                if (next_char != ' ' && next_char != '\t')
-                {
-                    in.setstate(std::ios_base::failbit);
-                    return in;
-                }
-            }
-
+            in >> DelimiterChar{'"'};
             std::string str = "";
             std::getline(in, str, '"');
             if (in)
