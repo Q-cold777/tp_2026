@@ -52,11 +52,28 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
         if (key_name == "key1")
         {
             if (has_key1) { in.setstate(std::ios_base::failbit); return in; }
-            double val = 0.0;
-            if (in >> val)
+
+            std::string val_str = "";
+            while (in >> ch && ch != ':')
             {
+                val_str += ch;
+            }
+            if (ch == ':')
+            {
+                in.putback(ch);
+            }
+
+            try
+            {
+                size_t processed = 0;
+                double val = std::stod(val_str, &processed);
                 temp.key1 = val;
                 has_key1 = true;
+            }
+            catch (...)
+            {
+                in.setstate(std::ios_base::failbit);
+                return in;
             }
         }
         else if (key_name == "key2")
