@@ -48,7 +48,6 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
         {
             key_name += next_char;
         }
-
         // Если остановились на двоеточии, вернем его обратно в поток
         if (next_char == ':')
         {
@@ -104,7 +103,6 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
                     return in;
                 }
             }
-
             std::string str = "";
             std::getline(in, str, '"');
             if (in)
@@ -119,7 +117,6 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
             return in;
         }
     }
-
     in >> DelimiterString{":)"};
 
     if (in && has_key1 && has_key2 && has_key3)
@@ -128,7 +125,6 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
     }
     return in;
 }
-
 std::ostream& operator<<(std::ostream& out, const DataStruct& src)
 {
     std::ostream::sentry guard(out);
