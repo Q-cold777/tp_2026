@@ -9,19 +9,18 @@ int main()
 {
     std::vector<DataStruct> data;
 
-    std::istream_iterator<DataStruct> input_iterator(std::cin);
-    std::istream_iterator<DataStruct> end_of_stream;
-
-    while (input_iterator != end_of_stream)
-     {
-        data.push_back(*input_iterator);
-        ++input_iterator;
-
-        if (std::cin.fail())
+    while (!std::cin.eof())
+    {
+        DataStruct ds;
+        if (std::cin >> ds)
         {
+            data.push_back(ds);
+        }
+        else if (!std::cin.eof())
+        {
+            // Сбрасываем ошибку и пропускаем строку до следующей записи
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            input_iterator = std::istream_iterator<DataStruct>(std::cin);
         }
     }
 
