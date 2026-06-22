@@ -1,129 +1,197 @@
 #include "DataStruct.hpp"
-#include "Delimiters.hpp"
 #include <iomanip>
 #include <sstream>
+#include <cmath>
 
-bool compareDataStruct(const DataStruct& lhs, const DataStruct& rhs)
+// Читает ровно один конкретный символ (пропускает пробелы через sentry)
+std::istream& operator>>(std::istream& in, DelimiterIO&& dest)
 {
-    if (lhs.key1 != rhs.key1)
-        return lhs.key1 < rhs.key1;
-    if (lhs.key2 != rhs.key2)
-        return lhs.key2 < rhs.key2;
-    return lhs.key3.length() < rhs.key3.length();
-}
-
-static bool readToken(std::istream& in, std::string& token)
-{
-    token.clear();
-    char c = 0;
-    while (in.get(c) && c == ' ') {}
-    if (!in) return false;
-    token += c;
-    while (in.get(c) && c != ':' && c != ' ')
-        token += c;
-    if (in && c == ':')
-        in.putback(c);
-    return !token.empty();
-}
-
-static bool parseDblSci(const std::string& token, double& val)
-{
-    if (token.empty()) return false;
-    char last = token.back();
-    if (last == 'd' || last == 'D') return false;
-    size_t epos = token.find_first_of("eE");
-    if (epos == std::string::npos) return false;
-    std::string mantissa = token.substr(0, epos);
-    if (mantissa.find('.') == std::string::npos) return false;
-    size_t dotpos = mantissa.find('.');
-    size_t start = (mantissa[0] == '-') ? 1 : 0;
-    if (dotpos == start) return false;
-    if (dotpos == mantissa.size() - 1) return false;
-    std::istringstream ss(token);
-    ss >> val;
-    return !ss.fail() && ss.eof();
-}
-
-static bool parseRecord(std::istream& ss, DataStruct& dest)
-{
-    DataStruct temp{0.0, '\0', ""};
-    bool has_key1 = false;
-    bool has_key2 = false;
-    bool has_key3 = false;
-
-    ss >> DelimiterChar{'('};
-    if (!ss) return false;
-
-    for (int i = 0; i < 3; ++i)
+    std::istream::sentry sentry(in);
+    if (!sentry)
     {
-        ss >> DelimiterChar{':'};
-        if (!ss) return false;
-
-        std::string key_name;
-        char c = 0;
-        while (ss.get(c) && c != ' ' && c != ':')
-            key_name += c;
-        if (!ss || c == ':') return false;
-
-        if (key_name == "key1")
-        {
-            if (has_key1) return false;
-            std::string token;
-            if (!readToken(ss, token)) return false;
-            double val = 0.0;
-            if (!parseDblSci(token, val)) return false;
-            temp.key1 = val;
-            has_key1 = true;
-        }
-        else if (key_name == "key2")
-        {
-            if (has_key2) return false;
-            char q1 = 0, ch = 0, q2 = 0;
-            if (!ss.get(q1) || q1 != '\'') return false;
-            if (!ss.get(ch)) return false;
-            if (!ss.get(q2) || q2 != '\'') return false;
-            temp.key2 = ch;
-            has_key2 = true;
-        }
-        else if (key_name == "key3")
-        {
-            if (has_key3) return false;
-            char quote = 0;
-            if (!ss.get(quote) || quote != '"') return false;
-            std::string str;
-            if (!std::getline(ss, str, '"')) return false;
-            temp.key3 = str;
-            has_key3 = true;
-        }
-        else
-        {
-            return false;
-        }
+        return in;
     }
+    char c = 0;
+    in >> c;
+    if (in && c != dest.exp)
+    {
+        in.setstate(std::ios::failbit);
+    }
+    return in;
+}
 
-    ss >> DelimiterChar{':'};
-    if (!ss) return false;
-    ss >> DelimiterChar{')'};
-    if (!ss) return false;
+// Читает double в научном формате: 1.0e-1, 5.0E+2
+// Проверяет: наличие e/E, точки в мантиссе, отсутствие суффикса d/D
+std::istream& operator>>(std::istream& in, DoubleSciIO&& dest)
+{
+    std::istream::sentry sentry(in);
+    if (!sentry)
+    {
+        return in;
+    }
+    std::string token;
+    char c = 0;
+    while (in.get(c) && c != ':' && c != ' ')
+    {
+        token += c;
+    }
+    if (in && c == ':')
+    {
+        in.putback(c);
+    }
+    if (token.empty())
+    {
+        in.setstate(std::ios::failbit);
+        return in;
+    }
+    char last = token.back();
+    if (last == 'd' || last == 'D')
+    {
+        in.setstate(std::ios::failbit);
+        return in;
+    }
+    size_t epos = token.find_first_of("eE");
+    if (epos == std::string::npos)
+    {
+        in.setstate(std::ios::failbit);
+        return in;
+    }
+    std::string mantissa = token.substr(0, epos);
+    size_t dotpos = mantissa.find('.');
+    if (dotpos == std::string::npos)
+    {
+        in.setstate(std::ios::failbit);
+        return in;
+    }
+    size_t start = (!mantissa.empty() && mantissa[0] == '-') ? 1 : 0;
+    if (dotpos == start || dotpos == mantissa.size() - 1)
+    {
+        in.setstate(std::ios::failbit);
+        return in;
+    }
+    std::istringstream ss(token);
+    ss >> dest.ref;
+    if (ss.fail())
+    {
+        in.setstate(std::ios::failbit);
+    }
+    return in;
+}
 
-    if (!has_key1 || !has_key2 || !has_key3) return false;
-    dest = temp;
-    return true;
+// Читает символьный литерал вида 'A'
+std::istream& operator>>(std::istream& in, CharLitIO&& dest)
+{
+    std::istream::sentry sentry(in);
+    if (!sentry)
+    {
+        return in;
+    }
+    in >> DelimiterIO{ '\'' };
+    in.get(dest.ref);
+    in >> DelimiterIO{ '\'' };
+    return in;
+}
+
+// Читает строку в двойных кавычках вида "Hello world"
+std::istream& operator>>(std::istream& in, StringIO&& dest)
+{
+    std::istream::sentry sentry(in);
+    if (!sentry)
+    {
+        return in;
+    }
+    in >> DelimiterIO{ '"' };
+    if (!in)
+    {
+        return in;
+    }
+    return std::getline(in, dest.ref, '"');
 }
 
 std::istream& operator>>(std::istream& in, DataStruct& dest)
 {
     std::istream::sentry guard(in);
     if (!guard)
+    {
         return in;
+    }
 
     std::string line;
     if (!std::getline(in, line))
+    {
         return in;
+    }
 
     std::istringstream ss(line);
-    if (!parseRecord(ss, dest))
+    DataStruct temp{0.0, '\0', ""};
+    bool has_key1 = false;
+    bool has_key2 = false;
+    bool has_key3 = false;
+
+    using sep = DelimiterIO;
+    using dbl = DoubleSciIO;
+    using chr = CharLitIO;
+    using str = StringIO;
+
+    ss >> sep{ '(' };
+    if (!ss)
+    {
         in.setstate(std::ios::failbit);
+        return in;
+    }
+
+    for (int i = 0; i < 3 && ss; ++i)
+    {
+        std::string key_name;
+        ss >> sep{ ':' } >> key_name;
+        if (!ss)
+        {
+            break;
+        }
+
+        if (key_name == "key1")
+        {
+            ss >> dbl{ temp.key1 } >> sep{ ':' };
+            if (ss)
+            {
+                has_key1 = true;
+            }
+        }
+        else if (key_name == "key2")
+        {
+            ss >> chr{ temp.key2 } >> sep{ ':' };
+            if (ss)
+            {
+                has_key2 = true;
+            }
+        }
+        else if (key_name == "key3")
+        {
+            ss >> str{ temp.key3 } >> sep{ ':' };
+            if (ss)
+            {
+                has_key3 = true;
+            }
+        }
+        else
+        {
+            ss.setstate(std::ios::failbit);
+        }
+    }
+
+    if (ss)
+    {
+        ss >> sep{ ')' };
+    }
+
+    if (ss && has_key1 && has_key2 && has_key3)
+    {
+        dest = temp;
+    }
+    else
+    {
+        in.setstate(std::ios::failbit);
+    }
 
     return in;
 }
@@ -132,19 +200,33 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& src)
 {
     std::ostream::sentry guard(out);
     if (!guard)
+    {
         return out;
+    }
 
     std::ostringstream ss;
     ss << std::scientific << std::setprecision(1) << src.key1;
     std::string s = ss.str();
-    for (char& ch : s) if (ch == 'E') ch = 'e';
+    for (char& ch : s)
+    {
+        if (ch == 'E')
+        {
+            ch = 'e';
+        }
+    }
     size_t epos = s.find('e');
     if (epos != std::string::npos && epos + 2 < s.size())
     {
         std::string exp_part = s.substr(epos + 2);
         size_t nz = exp_part.find_first_not_of('0');
-        if (nz == std::string::npos) exp_part = "0";
-        else exp_part = exp_part.substr(nz);
+        if (nz == std::string::npos)
+        {
+            exp_part = "0";
+        }
+        else
+        {
+            exp_part = exp_part.substr(nz);
+        }
         s = s.substr(0, epos + 2) + exp_part;
     }
 
@@ -152,4 +234,17 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& src)
     out << ":key2 '" << src.key2 << "'";
     out << ":key3 \"" << src.key3 << "\":)";
     return out;
+}
+
+bool compareDataStruct(const DataStruct& lhs, const DataStruct& rhs)
+{
+    if (lhs.key1 != rhs.key1)
+    {
+        return lhs.key1 < rhs.key1;
+    }
+    if (lhs.key2 != rhs.key2)
+    {
+        return lhs.key2 < rhs.key2;
+    }
+    return lhs.key3.length() < rhs.key3.length();
 }

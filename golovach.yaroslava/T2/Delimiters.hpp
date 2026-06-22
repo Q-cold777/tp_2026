@@ -6,7 +6,7 @@
 
 struct DelimiterChar
 {
-    char expected;
+    char expected; // Структура для проверки одиночного символа-разделителя
 };
 
 struct DelimiterString

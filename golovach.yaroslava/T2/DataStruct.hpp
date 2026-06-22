@@ -6,14 +6,40 @@
 
 struct DataStruct
 {
-    double key1;       // DBL SCI
-    char key2;         // CHR LIT
-    std::string key3;  // String
+    double key1;
+    char key2;
+    std::string key3;
 };
 
-bool compareDataStruct(const DataStruct& lhs, const DataStruct& rhs);
+// Вспомогательные структуры для перегрузки operator>>
 
+struct DelimiterIO
+{
+    char exp;
+};
+
+struct DoubleSciIO
+{
+    double& ref;
+};
+
+struct CharLitIO
+{
+    char& ref;
+};
+
+struct StringIO
+{
+    std::string& ref;
+};
+
+std::istream& operator>>(std::istream& in, DelimiterIO&& dest);
+std::istream& operator>>(std::istream& in, DoubleSciIO&& dest);
+std::istream& operator>>(std::istream& in, CharLitIO&& dest);
+std::istream& operator>>(std::istream& in, StringIO&& dest);
 std::istream& operator>>(std::istream& in, DataStruct& dest);
 std::ostream& operator<<(std::ostream& out, const DataStruct& src);
 
-#endif // DATA_STRUCT_HPP
+bool compareDataStruct(const DataStruct& lhs, const DataStruct& rhs);
+
+#endif
