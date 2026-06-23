@@ -72,7 +72,6 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
         return in;
     }
 
-#if 1
     DataStruct temp{0.0, '\0', ""};
     bool has_key1 = false;
     bool has_key2 = false;
@@ -145,88 +144,6 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
     }
 
     return in;
-#else
-    std::string line;
-    if (!std::getline(in, line))
-    {
-        return in;
-    }
-
-    std::istringstream ss(line);
-
-    DataStruct temp{0.0, '\0', ""};
-    bool has_key1 = false;
-    bool has_key2 = false;
-    bool has_key3 = false;
-
-    using sep = DelimiterIO;
-    using dbl = DoubleSciIO;
-    using chr = CharLitIO;
-    using str = StringIO;
-
-    ss >> sep{ '(' };
-    if (!ss)
-    {
-        in.setstate(std::ios::failbit);
-        return in;
-    }
-
-    for (int i = 0; i < 3 && ss; ++i)
-    {
-        std::string key_name;
-        ss >> sep{ ':' } >> key_name;
-        if (!ss)
-        {
-            break;
-        }
-
-        if (key_name == "key1")
-        {
-            ss >> dbl{ temp.key1 };
-            if (ss)
-            {
-                has_key1 = true;
-            }
-        }
-        else if (key_name == "key2")
-        {
-            ss >> chr{ temp.key2 };
-            if (ss)
-            {
-                has_key2 = true;
-            }
-        }
-        else if (key_name == "key3")
-        {
-            ss >> str{ temp.key3 };
-            if (ss)
-            {
-                has_key3 = true;
-            }
-        }
-        else
-        {
-            ss.setstate(std::ios::failbit);
-        }
-    }
-
-    // После чтения всех трёх полей (если всё успешно)
-    if (ss)
-    {
-        ss >> sep{ ':' } >> sep{ ')' };
-    }
-
-    if (ss && has_key1 && has_key2 && has_key3)
-    {
-        dest = temp;
-    }
-    else
-    {
-        in.setstate(std::ios::failbit);
-    }
-
-    return in;
-#endif
 }
 
 std::ostream& operator<<(std::ostream& out, const DataStruct& src)
