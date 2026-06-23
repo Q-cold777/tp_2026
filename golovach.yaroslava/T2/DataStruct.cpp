@@ -91,7 +91,7 @@ std::istream& operator>>(std::istream& in, DoubleSciIO&& dest)
         in.setstate(std::ios::failbit);
     }
     return in;
-#endif    
+#endif
 }
 
 // Читает символьный литерал вида 'A'
