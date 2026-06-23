@@ -30,68 +30,7 @@ std::istream& operator>>(std::istream& in, DoubleSciIO&& dest)
     }
 
     in >> std::ws; // пропускаем пробелы после ключа
-#if 1
     return in >> std::scientific >> dest.ref;
-#else
-    std::string token;
-    char c = 0;
-    while (in.get(c) && c != ':') // Считываем все символы числа, пока не упремся в ':'
-    {
-        token += c;
-    }
-    if (in && c == ':')
-    {
-        in.putback(c); // возвращаем ':' обратно в поток
-    }
-
-    if (token.empty())
-    {
-        in.setstate(std::ios::failbit);
-        return in;
-    }
-
-    // Проверка на отсутствие суффикса d/D
-    char last = token.back();
-    if (last == 'd' || last == 'D')
-    {
-        in.setstate(std::ios::failbit);
-        return in;
-    }
-
-    // Проверка наличия e/E
-    size_t epos = token.find_first_of("eE");
-    if (epos == std::string::npos)
-    {
-        in.setstate(std::ios::failbit);
-        return in;
-    }
-
-    // Проверка точки в мантиссе
-    std::string mantissa = token.substr(0, epos);
-    size_t dotpos = mantissa.find('.');
-    if (dotpos == std::string::npos)
-    {
-        in.setstate(std::ios::failbit);
-        return in;
-    }
-
-    //До и после точки должна быть хотя бы одна цифра
-    size_t start = (!mantissa.empty() && mantissa[0] == '-') ? 1 : 0;
-    if (dotpos == start || dotpos == mantissa.size() - 1)
-    {
-        in.setstate(std::ios::failbit);
-        return in;
-    }
-
-    // Если все проверки пройдены, парсим строку в double через строковый поток
-    std::istringstream ss(token);
-    ss >> dest.ref;
-    if (ss.fail())
-    {
-        in.setstate(std::ios::failbit);
-    }
-    return in;
-#endif
 }
 
 // Читает символьный литерал вида 'A'
@@ -116,7 +55,7 @@ std::istream& operator>>(std::istream& in, StringIO&& dest)
     {
         return in;
     }
-    in >> DelimiterIO{ '"' };
+    in >> DelimiterIO{ '"' }; // Ожидаем открывающую кавычку
     if (!in)
     {
         return in;
@@ -124,6 +63,7 @@ std::istream& operator>>(std::istream& in, StringIO&& dest)
     return std::getline(in, dest.ref, '"');
 }
 
+//главный оператор ввода
 std::istream& operator>>(std::istream& in, DataStruct& dest)
 {
     std::istream::sentry guard(in);
@@ -195,7 +135,7 @@ std::istream& operator>>(std::istream& in, DataStruct& dest)
         }
     }
 
-    // После чтения всех трёх полей
+    // После чтения всех трёх полей (если всё успешно)
     if (ss)
     {
         ss >> sep{ ':' } >> sep{ ')' };
@@ -231,7 +171,7 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& src)
             ch = 'e';
         }
     }
-    size_t epos = s.find('e');
+    size_t epos = s.find('e'); //убираем лишние ведущие нули
     if (epos != std::string::npos && epos + 2 < s.size())
     {
         std::string exp_part = s.substr(epos + 2);
@@ -255,13 +195,16 @@ std::ostream& operator<<(std::ostream& out, const DataStruct& src)
 
 bool compareDataStruct(const DataStruct& lhs, const DataStruct& rhs)
 {
+    //По возрастанию key1
     if (lhs.key1 != rhs.key1)
     {
         return lhs.key1 < rhs.key1;
     }
+    //По возрастанию key2 (если key1 равны)
     if (lhs.key2 != rhs.key2)
     {
         return lhs.key2 < rhs.key2;
     }
+    //По возрастанию ДЛИНЫ строки key3
     return lhs.key3.length() < rhs.key3.length();
 }
